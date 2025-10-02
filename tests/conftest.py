@@ -2,7 +2,9 @@ import asyncio
 from collections.abc import AsyncIterator
 from typing import AsyncGenerator
 
+import httpx
 import pytest
+import pytest_asyncio
 from fastapi import FastAPI
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
@@ -17,8 +19,9 @@ def anyio_backend():
     return "asyncio"
 
 
-@pytest.fixture(scope="session")
+@pytest_asyncio.fixture()
 async def test_engine() -> AsyncGenerator:
+    # Create a fresh in-memory database for each test
     engine = create_async_engine("sqlite+aiosqlite:///:memory:", future=True)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -28,14 +31,14 @@ async def test_engine() -> AsyncGenerator:
         await engine.dispose()
 
 
-@pytest.fixture()
+@pytest_asyncio.fixture()
 async def test_session(test_engine) -> AsyncIterator[AsyncSession]:
     session_maker = async_sessionmaker(bind=test_engine, expire_on_commit=False)
     async with session_maker() as session:
         yield session
 
 
-@pytest.fixture()
+@pytest_asyncio.fixture()
 async def app(test_session: AsyncSession) -> AsyncIterator[FastAPI]:
     app = create_app()
 
@@ -46,7 +49,7 @@ async def app(test_session: AsyncSession) -> AsyncIterator[FastAPI]:
     yield app
 
 
-@pytest.fixture()
+@pytest_asyncio.fixture()
 async def client(app: FastAPI) -> AsyncIterator[AsyncClient]:
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as ac:
         yield ac
