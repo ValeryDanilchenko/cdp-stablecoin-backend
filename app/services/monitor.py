@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
+
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -17,10 +19,10 @@ class MonitorStatus:
 
 
 class ContractsMonitor:
-    def __init__(self, poll_interval_sec: float = 2.0) -> None:
+    def __init__(self, poll_interval_sec: float | None = None) -> None:
         self._task: asyncio.Task[None] | None = None
         self._stop_event = asyncio.Event()
-        self._poll_interval = poll_interval_sec
+        self._poll_interval = poll_interval_sec or settings.monitor_poll_interval_sec
         self._processed_blocks = 0
         self._last_tick_at: datetime | None = None
 
@@ -50,15 +52,15 @@ class ContractsMonitor:
         logger.info("contracts monitor stopped")
 
     async def _run_loop(self) -> None:
-        try:
-            while not self._stop_event.is_set():
+        while not self._stop_event.is_set():
+            try:
                 await self._tick()
+            except Exception as exc:  # noqa: BLE001
+                logger.exception("monitor loop error: %s", exc)
+            try:
                 await asyncio.wait_for(self._stop_event.wait(), timeout=self._poll_interval)
-        except asyncio.TimeoutError:
-            # expected path for periodic wait
-            await self._run_loop()
-        except Exception as exc:  # noqa: BLE001
-            logger.exception("monitor loop error: %s", exc)
+            except asyncio.TimeoutError:
+                pass
 
     async def _tick(self) -> None:
         # Placeholder: fetch latest block and filter logs for CDP contracts
