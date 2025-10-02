@@ -7,7 +7,7 @@ Production-grade FastAPI backend showcasing a liquidation service for a CDP-like
 - SQLAlchemy 2.0 (async) + asyncpg, Alembic
 - httpx, web3.py
 - pytest, pytest-asyncio, coverage
-- ruff, black, isort, mypy, pre-commit
+- ruff, black, isort, mypy, flake8, pre-commit
 - Docker, docker-compose, GitHub Actions
 
 ### Quickstart
@@ -15,13 +15,14 @@ Production-grade FastAPI backend showcasing a liquidation service for a CDP-like
 ```bash
 cp .env.example .env
 ```
-2. Run with Docker:
+2. Enable Poetry in-project .venv and install:
 ```bash
-docker compose up --build
-```
-3. Local (Poetry):
-```bash
+poetry config virtualenvs.in-project true
 poetry install
+source .venv/bin/activate
+```
+3. Migrate and run locally:
+```bash
 poetry run alembic upgrade head
 poetry run uvicorn app.main:app --reload
 ```
@@ -61,3 +62,10 @@ app/
 alembic/
 .github/workflows/
 ```
+
+### Apps
+- Liquidation: endpoints and services under `app/services/liquidation.py` and `app/api/routes/liquidation.py`
+- Monitoring: continuous contracts monitoring under `app/services/monitor.py` and API under `app/api/routes/monitor.py`
+- Analytics: planned module for snapshots and KPIs
+
+See `docs/ARCHITECTURE.md` for a high-level overview.

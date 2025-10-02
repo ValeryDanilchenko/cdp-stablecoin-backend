@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     api_port: int = Field(default=8000)
     reload: bool = Field(default=True)
     environment: Literal["dev", "test", "prod"] = Field(default="dev")
+    log_level: str = Field(default="INFO")
 
     # Database
     postgres_host: str = Field(default="localhost")
@@ -30,6 +31,9 @@ class Settings(BaseSettings):
     # EVM
     evm_rpc_url: str = Field(default="http://localhost:8545")
     liquidation_executor_address: str = Field(default="0x0000000000000000000000000000000000000000")
+
+    # Monitoring
+    monitor_poll_interval_sec: float = Field(default=2.0)
 
 
 settings = Settings()
