@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,6 +11,8 @@ from app.schemas.liquidation import (
     LiquidationSimulateResponse,
 )
 from app.services.risk import RiskEvaluator
+
+logger = logging.getLogger("app.services.liquidation")
 
 
 class LiquidationService:
@@ -32,28 +35,75 @@ class LiquidationService:
 
     async def simulate_liquidation(self, position_id: str) -> LiquidationSimulateResponse:
         """Simulate liquidation with comprehensive error handling."""
+        logger.info("Starting liquidation simulation", extra={
+            "extra_fields": {"position_id": position_id}
+        })
+        
         try:
             pos = await self._load_position(position_id)
+            logger.debug("Position loaded successfully", extra={
+                "extra_fields": {
+                    "position_id": position_id,
+                    "collateral_symbol": pos.collateral_symbol,
+                    "debt_symbol": pos.debt_symbol
+                }
+            })
         except ValueError as e:
+            logger.error("Failed to load position", extra={
+                "extra_fields": {"position_id": position_id, "error": str(e)}
+            })
             raise ValueError(f"Failed to load position: {e}") from e
         
         try:
             collateral_price = await self.oracle.get_price_usd(pos.collateral_symbol)
             debt_price = await self.oracle.get_price_usd(pos.debt_symbol)
+            logger.debug("Prices fetched successfully", extra={
+                "extra_fields": {
+                    "collateral_price": collateral_price,
+                    "debt_price": debt_price
+                }
+            })
         except ValueError as e:
+            logger.error("Price oracle error", extra={
+                "extra_fields": {"position_id": position_id, "error": str(e)}
+            })
             raise ValueError(f"Price oracle error: {e}") from e
         
         try:
             collateral_usd = float(pos.collateral_amount) * collateral_price
             debt_usd = float(pos.debt_amount) * debt_price
         except (ValueError, TypeError) as e:
+            logger.error("Invalid amount format", extra={
+                "extra_fields": {
+                    "position_id": position_id,
+                    "collateral_amount": pos.collateral_amount,
+                    "debt_amount": pos.debt_amount,
+                    "error": str(e)
+                }
+            })
             raise ValueError(f"Invalid amount format: {e}") from e
         
         if collateral_usd < 0 or debt_usd < 0:
+            logger.error("Negative amounts detected", extra={
+                "extra_fields": {
+                    "position_id": position_id,
+                    "collateral_usd": collateral_usd,
+                    "debt_usd": debt_usd
+                }
+            })
             raise ValueError("Amounts cannot be negative")
         
         metrics = self.risk.compute_health(collateral_usd=collateral_usd, debt_usd=debt_usd)
         est_profit = max(collateral_usd - debt_usd, 0.0) if metrics.eligible else 0.0
+        
+        logger.info("Liquidation simulation completed", extra={
+            "extra_fields": {
+                "position_id": position_id,
+                "health_factor": metrics.health_factor,
+                "eligible": metrics.eligible,
+                "estimated_profit_usd": est_profit
+            }
+        })
         
         return LiquidationSimulateResponse(
             position_id=position_id,

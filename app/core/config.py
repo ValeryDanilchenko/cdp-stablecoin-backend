@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     reload: bool = Field(default=True)
     environment: Literal["dev", "test", "prod"] = Field(default="dev")
     log_level: str = Field(default="INFO")
+    log_format: str = Field(default="standard")  # "standard" or "json"
 
     # Database
     postgres_host: str = Field(default="localhost")
