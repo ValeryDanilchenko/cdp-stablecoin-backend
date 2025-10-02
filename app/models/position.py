@@ -19,6 +19,4 @@ class Position(Base):
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    __table_args__ = (
-        Index("ix_positions_owner", "owner_address"),
-    )
+    __table_args__ = (Index("ix_positions_owner", "owner_address"),)
