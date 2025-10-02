@@ -4,7 +4,13 @@ import time
 from typing import Callable
 
 from fastapi import Request, Response
-from prometheus_client import Counter, Histogram, CollectorRegistry, CONTENT_TYPE_LATEST, generate_latest
+from prometheus_client import (
+    CONTENT_TYPE_LATEST,
+    CollectorRegistry,
+    Counter,
+    Histogram,
+    generate_latest,
+)
 
 REGISTRY = CollectorRegistry()
 REQUEST_COUNT = Counter(

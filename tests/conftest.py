@@ -1,17 +1,15 @@
-import asyncio
-from collections.abc import AsyncIterator
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator, AsyncIterator
 
 import httpx
 import pytest
 import pytest_asyncio
 from fastapi import FastAPI
 from httpx import AsyncClient
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from app.main import create_app
-from app.db.session import get_session
 from app.db.base import Base
+from app.db.session import get_session
+from app.main import create_app
 
 
 @pytest.fixture(scope="session")

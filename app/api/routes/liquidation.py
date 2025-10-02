@@ -19,7 +19,7 @@ async def simulate(
     """Simulate liquidation for a position."""
     if not position_id or not position_id.strip():
         raise HTTPException(status_code=400, detail="position_id cannot be empty")
-    
+
     service = LiquidationService(session=session)
     try:
         return await service.simulate_liquidation(position_id=position_id.strip())
@@ -39,7 +39,7 @@ async def execute(
     """Execute liquidation for a position."""
     if not req.position_id or not req.position_id.strip():
         raise HTTPException(status_code=400, detail="position_id cannot be empty")
-    
+
     service = LiquidationService(session=session)
     try:
         return await service.execute_liquidation(

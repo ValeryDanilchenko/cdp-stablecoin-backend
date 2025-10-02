@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
-from app.core.config import settings
 from app.api.routes.health import router as health_router
 from app.api.routes.liquidation import router as liquidation_router
 from app.api.routes.positions import router as positions_router
+from app.core.config import settings
 
 
 def create_app() -> FastAPI:

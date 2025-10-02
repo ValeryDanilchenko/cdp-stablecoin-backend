@@ -5,7 +5,7 @@ from app.db.session import get_session
 from app.schemas.analytics import RiskSnapshotRead
 from app.services.analytics import AnalyticsService
 
-router = APIRouter(prefix="/analytics", tags=["analytics"]) 
+router = APIRouter(prefix="/analytics", tags=["analytics"])
 
 
 @router.post("/snapshot/{position_id}", response_model=RiskSnapshotRead)

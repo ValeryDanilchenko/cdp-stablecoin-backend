@@ -3,10 +3,10 @@ from __future__ import annotations
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.clients.price_oracle import PriceOracleClient
 from app.models.analytics import RiskSnapshot
 from app.models.position import Position
 from app.services.risk import RiskEvaluator
-from app.clients.price_oracle import PriceOracleClient
 
 
 class AnalyticsService:

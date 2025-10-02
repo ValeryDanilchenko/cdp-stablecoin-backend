@@ -2,10 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_session
-from app.models.chain_event import ChainEvent
 from app.services.indexer import Web3Indexer
 
-router = APIRouter(prefix="/events", tags=["events"]) 
+router = APIRouter(prefix="/events", tags=["events"])
 
 
 @router.get("/", response_model=list[dict])
