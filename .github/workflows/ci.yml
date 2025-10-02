@@ -39,6 +39,8 @@ jobs:
           poetry run ruff check .
           poetry run black --check .
           poetry run isort --check-only .
+          poetry run flake8 .
+          poetry run mypy .
       - name: Migrate DB
         env:
           POSTGRES_HOST: localhost
