@@ -1,10 +1,11 @@
 from fastapi import APIRouter, HTTPException
 
 from app.services.monitor import ContractsMonitor
+from app.db.session import get_sessionmaker
 
 router = APIRouter(prefix="/monitor", tags=["monitor"]) 
 
-_monitor = ContractsMonitor()
+_monitor = ContractsMonitor(sessionmaker=get_sessionmaker())
 
 
 @router.post("/start")

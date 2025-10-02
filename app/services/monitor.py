@@ -6,7 +6,10 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
+from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
+
 from app.core.config import settings
+from app.services.indexer import Web3Indexer
 
 logger = logging.getLogger(__name__)
 
@@ -19,12 +22,14 @@ class MonitorStatus:
 
 
 class ContractsMonitor:
-    def __init__(self, poll_interval_sec: float | None = None) -> None:
+    def __init__(self, poll_interval_sec: float | None = None, sessionmaker: async_sessionmaker[AsyncSession] | None = None) -> None:
         self._task: asyncio.Task[None] | None = None
         self._stop_event = asyncio.Event()
         self._poll_interval = poll_interval_sec or settings.monitor_poll_interval_sec
         self._processed_blocks = 0
         self._last_tick_at: datetime | None = None
+        self._sessionmaker = sessionmaker
+        self._current_block = 0
 
     def is_running(self) -> bool:
         return self._task is not None and not self._task.done()
@@ -63,7 +68,10 @@ class ContractsMonitor:
                 pass
 
     async def _tick(self) -> None:
-        # Placeholder: fetch latest block and filter logs for CDP contracts
-        await asyncio.sleep(0)
+        # Demo: index next block using indexer if sessionmaker provided
+        if self._sessionmaker is not None:
+            async with self._sessionmaker() as session:
+                await Web3Indexer(session).index_block_range(self._current_block, self._current_block)
+        self._current_block += 1
         self._processed_blocks += 1
         self._last_tick_at = datetime.utcnow()

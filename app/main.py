@@ -10,6 +10,7 @@ from app.api.routes.liquidation import router as liquidation_router
 from app.api.routes.positions import router as positions_router
 from app.api.routes.monitor import router as monitor_router
 from app.api.routes.analytics import router as analytics_router
+from app.api.routes.events import router as events_router
 
 
 def create_app() -> FastAPI:
@@ -27,6 +28,7 @@ def create_app() -> FastAPI:
     app.include_router(positions_router)
     app.include_router(monitor_router)
     app.include_router(analytics_router)
+    app.include_router(events_router)
     app.include_router(liquidation_router, prefix="/liquidation", tags=["liquidation"])
 
     @app.exception_handler(Exception)
