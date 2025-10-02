@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+
+# Envs
+.venv/
+venv/
+.env
+.env.*
+
+# Tools
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.dist/
+dist/
+build/
+
+# OS
+.DS_Store
+
+# Alembic
+alembic/versions/__pycache__/
+
+# IDE
+.idea/
+.vscode/
+
+# Local checklists (ignored by git)
+.tasknotes/
