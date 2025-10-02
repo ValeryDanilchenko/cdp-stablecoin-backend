@@ -5,7 +5,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", case_sensitive=False)
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", case_sensitive=False
+    )
 
     # API
     api_host: str = Field(default="0.0.0.0")
@@ -31,9 +33,5 @@ class Settings(BaseSettings):
     # EVM
     evm_rpc_url: str = Field(default="http://localhost:8545")
     liquidation_executor_address: str = Field(default="0x0000000000000000000000000000000000000000")
-
-    # Monitoring
-    monitor_poll_interval_sec: float = Field(default=2.0)
-
 
 settings = Settings()

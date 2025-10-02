@@ -10,10 +10,6 @@ from app.schemas.liquidation import (
     LiquidationSimulateResponse,
 )
 from app.services.risk import RiskEvaluator
-from prometheus_client import Counter
-
-LIQ_SIM_COUNT = Counter("liquidation_simulations_total", "Total liquidation simulations")
-LIQ_EXEC_COUNT = Counter("liquidation_executions_total", "Total liquidation executions")
 
 
 class LiquidationService:
@@ -38,7 +34,6 @@ class LiquidationService:
         debt_usd = float(pos.debt_amount) * debt_price
         metrics = self.risk.compute_health(collateral_usd=collateral_usd, debt_usd=debt_usd)
         est_profit = max(collateral_usd - debt_usd, 0.0) if metrics.eligible else 0.0
-        LIQ_SIM_COUNT.inc()
         return LiquidationSimulateResponse(
             position_id=position_id,
             health_factor=metrics.health_factor,
@@ -46,11 +41,18 @@ class LiquidationService:
             estimated_profit_usd=est_profit,
         )
 
-    async def execute_liquidation(self, position_id: str, max_slippage_bps: int) -> LiquidationExecuteResponse:
+    async def execute_liquidation(
+        self, position_id: str, max_slippage_bps: int
+    ) -> LiquidationExecuteResponse:
         sim = await self.simulate_liquidation(position_id)
         if not sim.eligible:
-            return LiquidationExecuteResponse(position_id=position_id, tx_hash="", realized_profit_usd=0.0)
+            return LiquidationExecuteResponse(
+                position_id=position_id, tx_hash="", realized_profit_usd=0.0
+            )
         # Placeholder execution path - in real system would build and send tx via web3
         tx_hash = "0x" + (abs(hash(position_id)) % (10**16)).to_bytes(8, "big").hex()
-        LIQ_EXEC_COUNT.inc()
-        return LiquidationExecuteResponse(position_id=position_id, tx_hash=tx_hash, realized_profit_usd=sim.estimated_profit_usd or 0.0)
+        return LiquidationExecuteResponse(
+            position_id=position_id,
+            tx_hash=tx_hash,
+            realized_profit_usd=sim.estimated_profit_usd or 0.0,
+        )

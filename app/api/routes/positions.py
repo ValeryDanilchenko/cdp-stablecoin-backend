@@ -1,4 +1,4 @@
-from typing import Sequence
+from collections.abc import Sequence
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
@@ -9,7 +9,7 @@ from app.db.session import get_session
 from app.models.position import Position
 from app.schemas.position import PositionCreate, PositionRead
 
-router = APIRouter(prefix="/positions", tags=["positions"]) 
+router = APIRouter(prefix="/positions", tags=["positions"])
 
 
 @router.get("/", response_model=list[PositionRead])
@@ -25,7 +25,9 @@ async def list_positions(
 
 
 @router.post("/", response_model=PositionRead, status_code=201)
-async def create_position(payload: PositionCreate, session: AsyncSession = Depends(get_session)) -> PositionRead:
+async def create_position(
+    payload: PositionCreate, session: AsyncSession = Depends(get_session)
+) -> PositionRead:
     position = Position(
         position_id=payload.position_id,
         owner_address=payload.owner_address,
