@@ -12,10 +12,45 @@ from app.schemas.position import PositionCreate, PositionRead
 router = APIRouter(prefix="/positions", tags=["positions"])
 
 
-@router.get("/", response_model=list[PositionRead])
+@router.get(
+    "/",
+    response_model=list[PositionRead],
+    summary="List CDP Positions",
+    description="""
+    Retrieve a paginated list of all CDP positions in the system.
+    
+    **Parameters:**
+    - `limit`: Number of positions to return (1-100, default: 10)
+    - `offset`: Number of positions to skip (default: 0)
+    
+    **Returns:**
+    - List of position objects with all details
+    
+    **Example Response:**
+    ```json
+    [
+        {
+            "id": 1,
+            "position_id": "pos_001",
+            "owner_address": "0x1234...",
+            "collateral_symbol": "ETH",
+            "collateral_amount": "10.5",
+            "debt_symbol": "USDC",
+            "debt_amount": "25000.0",
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z"
+        }
+    ]
+    ```
+    """,
+    responses={
+        200: {"description": "Successfully retrieved positions"},
+        422: {"description": "Invalid pagination parameters"}
+    }
+)
 async def list_positions(
-    limit: int = Query(10, ge=1, le=100),
-    offset: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100, description="Number of positions to return (1-100)"),
+    offset: int = Query(0, ge=0, description="Number of positions to skip"),
     session: AsyncSession = Depends(get_session),
 ) -> list[PositionRead]:
     stmt = select(Position).order_by(Position.id).limit(limit).offset(offset)
@@ -24,7 +59,47 @@ async def list_positions(
     return [PositionRead.model_validate(p, from_attributes=True) for p in rows]
 
 
-@router.post("/", response_model=PositionRead, status_code=201)
+@router.post(
+    "/",
+    response_model=PositionRead,
+    status_code=201,
+    summary="Create New CDP Position",
+    description="""
+    Create a new Collateralized Debt Position (CDP) in the system.
+    
+    **Required Fields:**
+    - `position_id`: Unique identifier for the position
+    - `owner_address`: Ethereum address of the position owner (must be valid 0x format)
+    - `collateral_symbol`: Token symbol for collateral (e.g., "ETH", "WBTC")
+    - `collateral_amount`: Amount of collateral (must be positive number)
+    - `debt_symbol`: Token symbol for debt (e.g., "USDC", "DAI")
+    - `debt_amount`: Amount of debt (must be positive number)
+    
+    **Validation:**
+    - Position ID must be unique
+    - Owner address must be valid Ethereum address (42 characters, starts with 0x)
+    - Amounts must be positive numbers
+    - Symbols cannot be empty
+    
+    **Example Request:**
+    ```json
+    {
+        "position_id": "pos_001",
+        "owner_address": "0x1234567890123456789012345678901234567890",
+        "collateral_symbol": "ETH",
+        "collateral_amount": "10.5",
+        "debt_symbol": "USDC",
+        "debt_amount": "25000.0"
+    }
+    ```
+    """,
+    responses={
+        201: {"description": "Position created successfully"},
+        400: {"description": "Invalid input data"},
+        409: {"description": "Position ID already exists"},
+        500: {"description": "Internal server error"}
+    }
+)
 async def create_position(
     payload: PositionCreate, session: AsyncSession = Depends(get_session)
 ) -> PositionRead:
