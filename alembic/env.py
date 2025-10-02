@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from logging.config import fileConfig
 
-from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
-from sqlalchemy.ext.asyncio import AsyncEngine
 
+from alembic import context
 from app.core.config import settings
 from app.db.base import Base
 
@@ -44,10 +43,6 @@ def do_run_migrations(connection: Connection) -> None:
 
 
 def run_migrations_online() -> None:
-    connectable = AsyncEngine(
-        Base.metadata.bind
-    )  # type: ignore[assignment]
-
     # Use SQLAlchemy engine from our settings
     from sqlalchemy.ext.asyncio import create_async_engine
 
