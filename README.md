@@ -63,7 +63,7 @@ A comprehensive Collateralized Debt Position (CDP) management API built with Fas
 
 4. **Set up environment variables**
    ```bash
-   cp .env.example .env
+   cp config.example.env .env
    # Edit .env with your configuration
    ```
 
@@ -74,7 +74,7 @@ A comprehensive Collateralized Debt Position (CDP) management API built with Fas
 
 6. **Start the application**
    ```bash
-   python -m app.main
+   python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
    ```
 
 ### Docker Deployment
