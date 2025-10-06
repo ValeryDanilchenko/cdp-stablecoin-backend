@@ -2,7 +2,7 @@
 
 A comprehensive Collateralized Debt Position (CDP) management API built with FastAPI, featuring liquidation simulation, risk assessment, and advanced monitoring capabilities.
 
-## ?? Features
+## Features
 
 - **Position Management**: Create, list, and manage CDP positions
 - **Liquidation System**: Simulate and execute liquidations with risk assessment
@@ -13,34 +13,34 @@ A comprehensive Collateralized Debt Position (CDP) management API built with Fas
 - **Production Ready**: Docker support with nginx reverse proxy
 - **Full Documentation**: Interactive API docs with examples
 
-## ??? Architecture
+## Architecture
 
 ```
-???????????????????    ???????????????????    ???????????????????
-?   FastAPI App   ?    ?   PostgreSQL    ?    ?  Price Oracle   ?
-?                 ??????   Database      ?    ?   (Simulated)   ?
-?  - REST API     ?    ?                 ?    ?                 ?
-?  - Rate Limiting?    ?  - Positions    ?    ?  - ETH, BTC,    ?
-?  - Validation   ?    ?  - Risk Data    ?    ?    USDC, etc.   ?
-???????????????????    ???????????????????    ???????????????????
-         ?
-         ?
-???????????????????
-?   Monitoring    ?
-?                 ?
-?  - Metrics      ?
-?  - Health Checks?
-?  - Logging      ?
-???????????????????
++-----------------+    +-----------------+    +-----------------+
+|   FastAPI App   |    |   PostgreSQL    |    |  Price Oracle   |
+|                 |<-->|   Database      |    |   (Simulated)   |
+|  - REST API     |    |                 |    |                 |
+|  - Rate Limiting|    |  - Positions    |    |  - ETH, BTC,    |
+|  - Validation   |    |  - Risk Data    |    |    USDC, etc.   |
++-----------------+    +-----------------+    +-----------------+
+         |
+         v
++-----------------+
+|   Monitoring    |
+|                 |
+|  - Metrics      |
+|  - Health Checks|
+|  - Logging      |
++-----------------+
 ```
 
-## ?? Prerequisites
+## Prerequisites
 
 - Python 3.13+
 - PostgreSQL 16+ (for production)
 - Docker & Docker Compose (optional)
 
-## ??? Installation
+## Installation
 
 ### Local Development
 
@@ -89,14 +89,14 @@ A comprehensive Collateralized Debt Position (CDP) management API built with Fas
    docker-compose -f docker-compose.prod.yml up --build
    ```
 
-## ?? API Documentation
+## API Documentation
 
 Once the application is running, visit:
 - **Interactive API Docs**: http://localhost:8000/docs
 - **ReDoc Documentation**: http://localhost:8000/redoc
 - **OpenAPI Schema**: http://localhost:8000/openapi.json
 
-## ?? API Endpoints
+## API Endpoints
 
 ### Core Endpoints
 
@@ -121,7 +121,7 @@ Once the application is running, visit:
 ### Health Checks
 - `GET /health` - Basic health check
 
-## ?? Usage Examples
+## Usage Examples
 
 ### Creating a Position
 
@@ -171,14 +171,14 @@ curl -X POST "http://localhost:8000/batch/positions" \
   }'
 ```
 
-## ?? Security Features
+## Security Features
 
 - **Input Validation**: Comprehensive validation for all inputs
 - **Rate Limiting**: 60 requests/minute, 1000 requests/hour per client
 - **Error Handling**: Detailed error messages without sensitive data exposure
 - **SQL Injection Protection**: SQLAlchemy ORM with parameterized queries
 
-## ?? Monitoring & Observability
+## Monitoring & Observability
 
 ### Metrics Available
 
@@ -192,7 +192,7 @@ curl -X POST "http://localhost:8000/batch/positions" \
 - **Log Levels**: Configurable (DEBUG, INFO, WARNING, ERROR)
 - **Request Tracking**: Full request/response logging
 
-## ?? Testing
+## Testing
 
 ```bash
 # Run all tests
@@ -205,7 +205,7 @@ pytest --cov=app
 pytest tests/test_health_endpoint.py -v
 ```
 
-## ?? Production Deployment
+## Production Deployment
 
 ### Environment Variables
 
@@ -242,7 +242,7 @@ docker-compose -f docker-compose.prod.yml logs -f
 docker-compose -f docker-compose.prod.yml up --scale api=3
 ```
 
-## ?? Configuration
+## Configuration
 
 ### Rate Limiting
 
@@ -263,14 +263,14 @@ The price oracle supports multiple tokens with simulated volatility:
 - 2% price volatility simulation
 - External API fallback (simulated)
 
-## ?? Performance
+## Performance
 
 - **Async/Await**: Full async support for high concurrency
 - **Database Pooling**: Efficient connection management
 - **Batch Operations**: Optimized bulk operations
 - **Rate Limiting**: Prevents system overload
 
-## ?? Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -279,18 +279,18 @@ The price oracle supports multiple tokens with simulated volatility:
 5. Run the test suite
 6. Submit a pull request
 
-## ?? License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## ?? Support
+## Support
 
 For support and questions:
 - Create an issue in the repository
 - Check the API documentation at `/docs`
 - Review the logs for error details
 
-## ?? Future Enhancements
+## Future Enhancements
 
 - [ ] Redis caching for price data
 - [ ] Webhook notifications for liquidation events
@@ -304,4 +304,4 @@ For support and questions:
 
 ---
 
-**Built with ?? using FastAPI, SQLAlchemy, and modern Python practices.**
+**Built with FastAPI, SQLAlchemy, and modern Python practices.**
